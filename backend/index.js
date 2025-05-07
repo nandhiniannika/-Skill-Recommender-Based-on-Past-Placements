@@ -5,22 +5,22 @@ const app = express();
 const PORT = process.env.PORT || 5000;
 const MONGO_URI = "mongodb://localhost:27017/Skill_Recommendor";
 
-// Connect to MongoDB
+// Routes
+const studentAuthRoutes = require('./routes/studentAuth');
+const skillExtractRoutes = require('./routes/skillExtract');
+
+// Middleware
+app.use(express.json());
+
+// API Routes
+app.use('/api/student', studentAuthRoutes);
+app.use('/api/skills', skillExtractRoutes);
+
+// MongoDB Connection
 async function connectToMongo() {
     try {
         await mongoose.connect(MONGO_URI);
         console.log("✅ MongoDB connected successfully!");
-
-        // Drop 'users' collection if it exists
-        const collections = await mongoose.connection.db.listCollections({ name: 'users' }).toArray();
-        if (collections.length > 0) {
-            await mongoose.connection.dropCollection('users');
-            console.log("🗑️ 'users' collection deleted.");
-        }
-
-        // Create placeholder collection to keep DB visible
-        const Placeholder = mongoose.model('Placeholder', new mongoose.Schema({ temp: String }));
-        await Placeholder.create({ temp: "hold" });
 
     } catch (err) {
         console.error("❌ MongoDB connection error:", err);
@@ -30,10 +30,12 @@ async function connectToMongo() {
 
 connectToMongo();
 
+// Root route
 app.get('/', (req, res) => {
-    res.send('Hello World!');
+    res.send('🚀 Skill Recommendation Server is running');
 });
 
+// Start the server
 app.listen(PORT, () => {
-    console.log(`🚀 Server running at http://localhost:${PORT}`);
+    console.log(`🚀 Server is running at http://localhost:${PORT}`);
 });
