@@ -11,7 +11,7 @@ from extract_skills import extract_skills_from_text
 pytesseract.pytesseract.tesseract_cmd = r"C:\Program Files\Tesseract-OCR\tesseract.exe"
 
 app = Flask(__name__)
-CORS(app)  # Enable Cross-Origin requests
+CORS(app, resources={r"/upload-resume": {"origins": "http://localhost:3000"}}) # Enable Cross-Origin requests
 
 # === Extract text from PDF using pdfplumber or OCR fallback ===
 def extract_text_from_pdf(pdf_bytes):

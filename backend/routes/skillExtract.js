@@ -3,7 +3,7 @@ const multer = require('multer');
 const fs = require('fs');
 const axios = require('axios');
 const FormData = require('form-data');
-const Placement = require('../models/placements'); // Assuming you have a Mongoose model
+const Placement = require('../models/placements'); // Your Mongoose model
 
 const router = express.Router();
 const upload = multer({ dest: 'uploads/' });
@@ -17,29 +17,29 @@ router.post('/upload-resume', upload.single('resume'), async (req, res) => {
     const formData = new FormData();
     formData.append('file', fs.createReadStream(filePath));
 
-    // Step 1: Extract skills from the PDF
+    // Step 1: Call Python backend to extract skills
     const { data } = await axios.post('http://localhost:5001/extract-skills-file', formData, {
       headers: formData.getHeaders(),
     });
 
-    const extractedSkills = [...(data.skills.technical_skills || []), ...(data.skills.soft_skills || [])];
+    const technicalSkills = (data.skills.technical_skills || []).map(skill => skill.toLowerCase());
 
-    // Step 2: Find matching placements from DB
+    // Step 2: Fetch placement records and match technical skills only
     const allPlacements = await Placement.find({});
-    const matched = allPlacements.filter(entry =>
-      entry.skills.some(skill => extractedSkills.includes(skill))
+    const matchedPlacements = allPlacements.filter(entry =>
+      entry.skills.some(skill => technicalSkills.includes(skill.toLowerCase()))
     );
 
     res.json({
-      extractedSkills,
-      matchedPlacements: matched
+      extractedSkills: data.skills,
+      matchedPlacements
     });
 
   } catch (err) {
-    console.error('Error during skill extraction:', err);
+    console.error('❌ Error during skill extraction or matching:', err);
     res.status(500).json({ error: 'Skill extraction or matching failed' });
   } finally {
-    fs.unlink(filePath, () => {});
+    fs.unlink(filePath, () => {}); // Clean up uploaded file
   }
 });
 
