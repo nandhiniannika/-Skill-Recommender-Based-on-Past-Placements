@@ -1,11 +1,30 @@
 const mongoose = require('mongoose');
 
 const placementInfoSchema = new mongoose.Schema({
-  rollno: { type: String, required: true },
-  placed: { type: Boolean, required: true },
-  company: { type: String },
-  skills: { type: String },
-  package: { type: String } // Keep as String if it's like "5 LPA"
+name: {
+    type: String,
+    required: true
+  },
+  rollno: {
+    type: String,
+    required: true
+  },
+  placed: {
+    type: Boolean,
+    default: false
+  },
+  company: {
+    type: String,
+    required: true
+  },
+  skills: {
+    type: [String],
+    required: true
+  },
+  package: {
+    type: String,
+    required: false
+  }
 });
 
 // ✅ Use the correct variable name

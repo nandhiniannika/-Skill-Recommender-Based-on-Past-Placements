@@ -39,6 +39,7 @@ const PlacementInfo = () => {
 
     try {
       const res = await axios.post("http://localhost:5000/api/placement", {
+        name: student.name,
         rollno: student.rollno,
         placed: form.placed,
         company: form.company,
