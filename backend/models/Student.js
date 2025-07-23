@@ -1,11 +1,10 @@
 const mongoose = require('mongoose');
 
 const studentSchema = new mongoose.Schema({
-  rollno: {
-    type: String,
-    required: true,
-    unique: true
-  }
+  name: { type: String, required: true },             // 👈 Added name field
+  rollno: { type: String, required: true, unique: true },
+  password: { type: String, required: true },
+  year: { type: String, required: true }
 });
 
-module.exports = mongoose.model('Student', studentSchema);
+module.exports = mongoose.model("Student", studentSchema);
